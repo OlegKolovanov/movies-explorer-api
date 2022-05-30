@@ -1,1 +1,1 @@
-# movies-explorer-api
+https://moviefront.nomoreparties.sbs/api/
