@@ -18,14 +18,15 @@ module.exports.createMovie = (req, res, next) => {
     duration,
     year,
     description,
-    trailer,
+    trailerLink,
     nameRU,
     nameEN,
     thumbnail,
     movieId,
   } = req.body;
-
+  const owner = req.user._id;
   Movie.create({
+    owner,
     name,
     image,
     country,
@@ -33,21 +34,14 @@ module.exports.createMovie = (req, res, next) => {
     duration,
     year,
     description,
-    trailer,
+    trailerLink,
     nameRU,
     nameEN,
     thumbnail,
     movieId,
-    owner: req.user._id,
   })
-    .then((movie) => res.send({ data: movie }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new BadRequest('Переданны некорректные данные'));
-      } else {
-        next(err);
-      }
-    });
+    .then((data) => res.send(data))
+    .catch(next);
 };
 
 module.exports.deleteMovie = (req, res, next) => {

@@ -6,7 +6,6 @@ const { NODE_ENV, JWT_SECRET } = process.env;
 
 const getToken = (header) => header.replace('Bearer ', '');
 
-// eslint-disable-next-line consistent-return
 module.exports = (req, res, next) => {
   const { authorization } = req.headers;
 

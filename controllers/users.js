@@ -12,19 +12,12 @@ const { NODE_ENV, JWT_SECRET } = process.env;
 module.exports.getUser = (req, res, next) => {
   User.findById(req.user._id)
     .then((user) => {
-      if (!user) {
-        throw new NotFoundErr('Пользователь не найден');
-      } else {
-        res.send({ data: user });
-      }
+      res.status(200).send(user);
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new BadRequest('Переданны некорректные данные'));
-      } else {
-        next(err);
-      }
-    });
+      res.send(err);
+    })
+    .catch(next);
 };
 
 module.exports.updateUser = (req, res, next) => {
@@ -83,18 +76,17 @@ module.exports.register = (req, res, next) => {
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
-  return User.findUserByCredentials(email, password)
+  User.findUserByCredentials(email, password)
     .then((user) => {
       // создадим токен
       const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret', { expiresIn: '7d' });
-      console.log(token);
       res
         .cookie('jwt', token, {
           maxAge: 3600000,
           httpOnly: true,
           sameSite: true,
         });
-      res.send({ token, user });
+      return res.send({ token });
     })
     .catch(() => {
       next(new Unauthorized('Неверно указана электронная почта или пaроль'));
