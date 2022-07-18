@@ -21,8 +21,8 @@ module.exports.getUser = (req, res, next) => {
 };
 
 module.exports.updateUser = (req, res, next) => {
-  const { email, name } = req.body;
-  User.findByIdAndUpdate(req.user._id, { email, name }, { new: true, runValidators: true })
+  const { name, email } = req.body;
+  User.findByIdAndUpdate(req.user._id, { name, email }, { new: true, runValidators: true })
     .then((user) => {
       if (!user) {
         throw new NotFoundErr('Пользователь не найден');
@@ -80,13 +80,7 @@ module.exports.login = (req, res, next) => {
     .then((user) => {
       // создадим токен
       const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret', { expiresIn: '7d' });
-      res
-        .cookie('jwt', token, {
-          maxAge: 3600000,
-          httpOnly: true,
-          sameSite: true,
-        });
-      return res.send({ token });
+      res.send({ token })
     })
     .catch(() => {
       next(new Unauthorized('Неверно указана электронная почта или пaроль'));
